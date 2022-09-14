@@ -5,41 +5,6 @@ import wordcloud
 #Create dataframe
 df = pd.read_csv("data/rocksamples.csv", index_col=0)
 
-#Print 1st five lines
-#print(df.head())
-
-#Print total rows and columns
-#print("There are {} observations and {} features in this dataset.\n".format(df.shape[0], df.shape[1]))
-
-#selected columns
-#print(df[["Mission", "Type", "Subtype"]].head())
-
-#group by mission
-#mission = df.groupby("Mission")
-
-#select highest average weight per mission
-#print(mission.mean().sort_values(by="Weight(g)", ascending=False).head())
-
-#Weight VS Mission Graph
-# plt.figure(figsize=(15, 10))
-# mission.size().sort_values(ascending=False).plot.bar()
-# plt.xticks(rotation=50)
-# plt.xlabel("Mission Name")
-# plt.ylabel("Weight")
-# plt.show()
-
-#remove special characters
-def removeSpecialChar(text):
-    for letter in str(text):
-        if(letter == ">"):
-            print(letter)
-            text.replace(letter, "Gr")
-        elif(letter == "<"):
-            text.replace(letter, "Le")
-        elif(letter == "-"):
-            text.replace(letter, " to ")
-    return text
-
 #calculating frequencies and create wordcloud
 rock_types = {}
 rock_subtypes = {}

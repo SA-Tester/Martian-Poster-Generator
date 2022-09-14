@@ -1,4 +1,5 @@
 # Source: https://towardsdatascience.com/create-word-cloud-into-any-shape-you-want-using-python-d0b88834bc32
+# 'https://science.nasa.gov/science-news/citizenscience/citizen-scientist-leads-discovery-of-34-ultracool-brown%3Ddwarfs-with-companions'
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,7 +10,8 @@ from wordcloud import STOPWORDS
 from wordcloud import ImageColorGenerator
 from PIL import Image
 
-article = Article('https://science.nasa.gov/science-news/citizenscience/citizen-scientist-leads-discovery-of-34-ultracool-brown%3Ddwarfs-with-companions')
+link_to_file = str(input("Input a link to a document: "))
+article = Article(link_to_file)
 article.download()
 article.parse()
 
