@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {% if title %}
+  <title>Space App - {{title}}</title>
+  {% else %}
+  <title>Space App</title>
+  {% endif %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='mainmars.css')}}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+  <nav>
+    <a class="icon" href="/"><img src="static\images\logo.png"></a>
+    <div class="nav-bar" id="nav">
+      <ul>
+        <img src="static\images\icons8-close-30.png" class="close" onclick="hidemenue()">
+        <li><a href="{{url_for('home')}}">HOME</a></li>
+        <li><a href="{{url_for('create')}}">CREATE</a></li>
+        <li><a href="#">SUPPORT US</a></li>
+        <li><a href="#">SIGN IN</a></li>
+      </ul>
+    </div>
+    <img src="static\images\icons8-menu-50.png" class="menue" onclick="popmenue()">
+  </nav>
+
+  <div>
+    {% block content %}{% endblock %}
+  </div>
+  <script src="{{ url_for('static', filename='mars.js')}}"></script>
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<section id="home">
+    <h3>GET POSTERS WITH FACTS ON MARS MISSIONS</h3>
+    <br>
+    <p>We developed an AI to generate posters that<br> display facts in a <br>creative and exciting way</p>
+</section>
+<section id="template">
+    <div class="row">
+        <div class="col">
+            <h3 class="line1">MULTIPLE TEMPLATES <br> TO CHOOSE FROM</h3>
+            <p class="line2">Chose your favourite template and<br> you can add your own template designs as well by joining our community
+            </p>
+            <button class="btn">View templates</button>
+        </div>
+        <div class="col"><img src="static\images\templates.png"></div>
+    </div>
+</section>
+<section id="design">
+    <div class="row">
+        <div class="col"><img src="static\images\design.jpg"></div>
+        <div class="col">
+            <h3 class="line1">START GENERATING YOUR<br>OWN MARS MISSION POSTER</h3>
+            <button class="btn" onclick="window.location.href='/create';">Get Started</button>
+        </div>
+    </div>
+</section>
+{% endblock %}
