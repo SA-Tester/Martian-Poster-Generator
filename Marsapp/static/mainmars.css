@@ -134,6 +134,92 @@ nav ul li a:hover::after{
 #design .btn{
     color: #fff;
 }
+.crt_heading{
+    background-image:linear-gradient(rgba(2, 6, 20, 0.5),rgba(2, 6, 20, 0.5)), url(images/landscape.jpg);
+    color: white;
+    text-align: center;
+    padding: 5% 0%;
+    min-height: 30vh;
+    width: 100%;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+}
+.crt_heading h1{
+    font-size: 45px;
+    font-weight: 400;
+}
+.crt_heading p{
+    font-size: 20px;
+    font-weight: 200;
+}
+.crt_form{
+    background-color: #292f36;
+    opacity: 0.95;
+    margin: 2% 2%;
+    padding: 5% 10%;
+    border: 5px;
+    font-size: 20px;
+    color: white;
+}
+.crt_form .box{
+    padding: 30px 0px;
+}
+.crt_form #mission{
+    font-family: Poppins;
+    padding: 5px;
+    font-size: 18px;
+}
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: none;
+    border-bottom: 2px solid rgb(248, 107, 0);
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #292f36;
+    color: #fff;
+}
+.example{
+    background-color: rgb(234, 141, 69);
+    margin: 2% 0%;
+    padding: 1% 2%;
+    border-radius: 20px;
+}
+.example h4{
+    font-weight: 400;
+    color: black;
+    margin-bottom: 2px;
+    margin-top: 3px;
+}
+.example p{
+    width: 100%;
+    padding: 10px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #fff;
+    color: black;
+    font-size: 15px;
+}
+.addbtn{
+    text-align: center;
+    box-sizing: border-box;
+    border: 2px solid white;
+    color: #fff;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    background-color: transparent;
+}
+.addbtn:hover{
+    background-color: #fff;
+    transition: 0.5s;
+    color: #292f36;
+}
 
 
 
