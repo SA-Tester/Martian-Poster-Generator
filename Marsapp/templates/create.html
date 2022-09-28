@@ -1,4 +1,35 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>This is the create page</h1>
+    <form action="{{url_for('create')}}" method = "get">
+
+        <input type="search" name="searchBar" placeholder="Enter a text..."/>
+        <button type="submit" name="submitButton">Search</button>
+        <br><br>
+        <!--fieldset>
+            <legend>Customize Imagery</legend>
+            <fieldset>
+                <legend>Cameras</legend>
+                <input type="checkbox" name="cameraType" value="FHAZ"/>
+                <label for="cameraType">FHAZ</label>
+                <input type="checkbox" name="cameraType" value="RHAZ"/>
+                <label for="cameraType">RHAZ</label>
+                <input type="checkbox" name="cameraType" value="MAST"/>
+                <label for="cameraType">MAST</label>
+                <input type="checkbox" name="cameraType" value="CHEMCAM"/>
+                <label for="cameraType">CHEMCAM</label>
+                <input type="checkbox" name="cameraType" value="MAHLI"/>
+                <label for="cameraType">MAHLI</label>
+                <input type="checkbox" name="cameraType" value="MARDI"/>
+                <label for="cameraType">MARDI</label>
+                <input type="checkbox" name="cameraType" value="NAVCAM"/>
+                <label for="cameraType">NAVCAM</label>
+                <input type="checkbox" name="cameraType" value="PANCAM"/>
+                <label for="cameraType">PANCAM</label>
+                <input type="checkbox" name="cameraType" value="MINITES"/>
+                <label for="cameraType">MINITES</label>
+            </fieldset>
+        </fieldset-->
+
+    </form>
 {% endblock %}
