@@ -11,8 +11,7 @@ def home():
 @app.route('/create', methods=["GET"])
 def create():
     search = request.args.get("searchBar")
-    #cameraSelection = request.args.getlist("cameraType")
-    PosterGenerator.getInput(str(search)) #  + " " + str(cameraSelection)
+    PosterGenerator.getInput(str(search))
     return render_template('create.html', title='Create')
 
 if __name__ == '__main__':

@@ -1,40 +1,47 @@
 # save searches and their template paths
 # input date in YYYY-MM-DD format -> add to guidelines
 
-import shutil
 import requests
 import json
 import random
 import os
+import mysql.connector
 
-def getInput(var):
-    possibleQueries = generateQueries(filterInput(var), var)
-    imageDownloader(possibleQueries)
-    # f = open("test.txt", "w")
-    # f.write(filterInput(var))
-    # f.close()
+dir_path = ""
+
+def getInput(inputSearch):
+    possibleQueries = generateQueries(filterInput(inputSearch), inputSearch)
+    if(inputSearch.upper() != "" or filterInput(inputSearch) != "ERROR"):
+        imageDownloader(possibleQueries, inputSearch)
+    createDB()
 
 def filterInput(inputSearch):
     # Text which user input can be a camera type, sol, rover name, date or status
+    global dir_path
 
     cameraTypes = ["FHAZ", "RHAZ", "MAST", "CHEMCAM", "MAHLI", "MARDI", "NAVCAM", "PANCAM", "MINITES"]
     if(inputSearch in cameraTypes):
         result = "camera"
+        dir_path = "processed-images/originals/camera"
 
     elif(inputSearch.isdigit()):
         result = "sol"
+        dir_path = "processed-images/originals/sol"
 
     elif(inputSearch.lower() == "curiosity" or inputSearch.lower() == "opportunity" or inputSearch.lower() == "spirit"):
         result = "rover"
+        dir_path = "processed-images/originals/rover"
 
     elif(len(inputSearch) == 10):
         if(validateDate(inputSearch)):
             result = "date"
+            dir_path = "processed-images/originals/earth-date"
         else:
             result = "ERROR"
 
     elif(inputSearch.lower()=="active" or inputSearch.lower()=="complete" or inputSearch.lower()=="inactive"):
         result = "status"
+        dir_path = "processed-images/originals/status"
 
     else:
         result = "ERROR"
@@ -93,9 +100,14 @@ def validateDate(textDate):
 def generateQueries(inputType, inputSearch):
     possibleQueries = {}
 
-    curiosityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=" + str(random.randint(0,3000))+ "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
-    opportunityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/photos?sol=" + str(random.randint(0,3000)) + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
-    spiritQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=" + str(random.randint(0,3000)) + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
+    sols = []
+    for i in range(3):
+        n = random.randint(0, 3000)
+        sols.append(str(n))
+
+    curiosityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=" + sols[0] + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
+    opportunityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/photos?sol=" + sols[1] + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
+    spiritQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=" + sols[2] + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
     
     if(inputType == "camera"):
         if(inputSearch.upper() == "FHAZ" or inputSearch.upper == "RHAZ" or inputSearch == "NAVCAM"):
@@ -188,25 +200,56 @@ def generateQueries(inputType, inputSearch):
 
     return possibleQueries
 
-def imageDownloader(possibleQueries):
+def imageDownloader(possibleQueries, inputSearch):
     randomImageSources = []
     randomImageIndexes = []
     count = 1
 
     if(len(possibleQueries) > 0):
-        for i in range(0, 5):
+        for i in range(0, 3):
             n = random.randint(0, len(possibleQueries)-1)
             randomImageIndexes.append(n)
     
     for i in randomImageIndexes:
         randomImageSources.append(str(possibleQueries[i]['img_src']))   
 
-    dir_path = "processed-images/originals"
-    for path in os.listdir(dir_path):
-        if os.path.isfile(os.path.join(dir_path, path)):
-            count += 1
+    if (dir_path != ""):
+        for path in os.listdir(dir_path):
+            if os.path.isfile(os.path.join(dir_path, path + "/" + inputSearch.upper())):
+                count += 1
 
     for url in randomImageSources:
         r = requests.get(url)
-        open("processed-images/originals/" + str(count) + ".png", 'wb').write(r.content)
+        open(dir_path + "/" +  inputSearch.upper() + " - " + str(count) + ".png", 'wb').write(r.content)
         count += 1
+
+def createDB():
+    db = mysql.connector.connect(
+        host = "localhost",
+        user = "root",
+        password = "Root1234$"
+    )
+
+    f = open("test.txt", "w")
+    f.write(str(db))
+    f.close()
+# def createDB():
+#     marsapp.app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///Mars_Imagery.db'
+#     db = SQLAlchemy(marsapp.app)
+
+#     class ImageInfo(db.Model):
+#         image_id = db.Column(db.Integer, primary_key = True)
+#         sol = db.Column(db.Integer, nullable = False)
+#         camera = db.Column(db.String(10), nullable = False)
+#         path = db.Column(db.String(150), nullable = False)
+#         earth_date = db.Column(db.Date, nullable = False)
+#         rover_name = db.Column(db.String(100), nullable = False)
+#         landing_date = db.Column(db.Date, nullable = False)
+#         launch_date = db.Column(db.Date, nullable = False)
+#         status = db.Column(db.String(50), nullable = False)
+
+#     class SearchImage(db.Model):
+#         search_text = db.Column(db.String(150), nullable = False)
+#         image1 = db.Column(db.Integer, nullable = False)
+#         image2 = db.Column(db.Integer, nullable = False)
+#         image3 = db.Column(db.Integer, nullable = False)
