@@ -6,6 +6,19 @@ import json
 import random
 import os
 import mysql.connector
+import textwrap
+import tensorflow as tf
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+from skimage.color import rgb2lab, lab2rgb
+from skimage.io import imsave
+
+db = mysql.connector.connect(
+        host = "localhost",
+        user = "root",
+        password = "Root1234$",
+        database = "MarsImagery"
+    )
 
 dir_path = ""
 
@@ -13,7 +26,10 @@ def getInput(inputSearch):
     possibleQueries = generateQueries(filterInput(inputSearch), inputSearch)
     if(inputSearch.upper() != "" or filterInput(inputSearch) != "ERROR"):
         imageDownloader(possibleQueries, inputSearch)
-    createDB()
+
+    # resizeImages()
+    # colorImages("processed-images/resized/FHAZ - 1.png")
+
 
 def filterInput(inputSearch):
     # Text which user input can be a camera type, sol, rover name, date or status
@@ -47,6 +63,7 @@ def filterInput(inputSearch):
         result = "ERROR"
 
     return result
+
 
 def validateDate(textDate):
 
@@ -97,6 +114,7 @@ def validateDate(textDate):
     else:
         return False
 
+
 def generateQueries(inputType, inputSearch):
     possibleQueries = {}
 
@@ -129,14 +147,6 @@ def generateQueries(inputType, inputSearch):
                             possibleQueries[i] = l
                             i += 1
                             #f.write(str(l) + "\n")
-                    
-                elif(response.status_code == 404):
-                    #f.write("Error connecting to API")
-                    return
-                
-                else:
-                    #f.write("An unidentified error occured")
-                    return
 
             #f.write(str(possibleQueries[2]['img_src']))
             #f.close()
@@ -146,7 +156,6 @@ def generateQueries(inputType, inputSearch):
 
             queries = [opportunityQ, spiritQ]
 
-            #f = open("test.txt", "w")
             for query in queries:
                 response = requests.get(query)
                 
@@ -159,22 +168,11 @@ def generateQueries(inputType, inputSearch):
                         for l in val:
                             possibleQueries[i] = l
                             i += 1
-                            #f.write(str(l) + "\n")
-                    
-                elif(response.status_code == 404):
-                    #f.write("Error connecting to API")
-                    return
-                
-                else:
-                    #f.write("An unidentified error occured")
-                    return
-
-            #f.close()
 
         else:
+            # present in curiosity only
             queries = [curiosityQ]
 
-            #f = open("test.txt", "w")
             for query in queries:
                 response = requests.get(query)
                 
@@ -187,22 +185,14 @@ def generateQueries(inputType, inputSearch):
                         for l in val:
                             possibleQueries[i] = l
                             i += 1
-                            #f.write(str(l) + "\n")
-                    
-                elif(response.status_code == 404):
-                    #f.write("Error connecting to API")
-                    return
-                
-                else:
-                    #f.write("An unidentified error occured")
-                    return
-            #f.close()
 
     return possibleQueries
+
 
 def imageDownloader(possibleQueries, inputSearch):
     randomImageSources = []
     randomImageIndexes = []
+    image_ids = []
     count = 1
 
     if(len(possibleQueries) > 0):
@@ -211,45 +201,165 @@ def imageDownloader(possibleQueries, inputSearch):
             randomImageIndexes.append(n)
     
     for i in randomImageIndexes:
-        randomImageSources.append(str(possibleQueries[i]['img_src']))   
+        if(checkForExistingImages(str(possibleQueries[i]['id']))):
+            randomImageSources.append(str(possibleQueries[i]['img_src']))
+        else:
+            image_ids.append(str(possibleQueries[i]['id']))
 
     if (dir_path != ""):
         for path in os.listdir(dir_path):
-            if os.path.isfile(os.path.join(dir_path, path + "/" + inputSearch.upper())):
+            find_search = path.split()[0]
+
+            if(find_search == inputSearch.upper()):
                 count += 1
 
     for url in randomImageSources:
         r = requests.get(url)
-        open(dir_path + "/" +  inputSearch.upper() + " - " + str(count) + ".png", 'wb').write(r.content)
+        path = dir_path + "/" +  inputSearch.upper() + " - " + str(count) + ".png"
+        open(path, 'wb').write(r.content)
+        image_id = possibleQueries[randomImageSources.index(url)]["id"]
+        if(checkForExistingImages(image_id) == True):
+            updateImageTable(possibleQueries, randomImageSources.index(url), path)
+        image_ids.append(image_id)
         count += 1
 
-def createDB():
-    db = mysql.connector.connect(
-        host = "localhost",
-        user = "root",
-        password = "Root1234$"
-    )
+    updateSearchTable(inputSearch.upper(), image_ids)
 
-    f = open("test.txt", "w")
-    f.write(str(db))
-    f.close()
-# def createDB():
-#     marsapp.app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///Mars_Imagery.db'
-#     db = SQLAlchemy(marsapp.app)
 
-#     class ImageInfo(db.Model):
-#         image_id = db.Column(db.Integer, primary_key = True)
-#         sol = db.Column(db.Integer, nullable = False)
-#         camera = db.Column(db.String(10), nullable = False)
-#         path = db.Column(db.String(150), nullable = False)
-#         earth_date = db.Column(db.Date, nullable = False)
-#         rover_name = db.Column(db.String(100), nullable = False)
-#         landing_date = db.Column(db.Date, nullable = False)
-#         launch_date = db.Column(db.Date, nullable = False)
-#         status = db.Column(db.String(50), nullable = False)
+def updateImageTable(possibleQueries, i, path_to_image):
+    cursor = db.cursor()
+    add_to_image_table_Q = "INSERT INTO image_info(image_id, sol, camera, path, earth_date, rover_name, rover_landing_date, rover_launch_date, status) values(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    values = (str(possibleQueries[i]['id']),
+            str(possibleQueries[i]['sol']),
+            str(possibleQueries[i]['camera']['name']),
+            path_to_image,
+            str(possibleQueries[i]['earth_date']),
+            str(possibleQueries[i]['rover']['name']),
+            str(possibleQueries[i]['rover']['landing_date']),
+            str(possibleQueries[i]['rover']['launch_date']),
+            str(possibleQueries[i]['rover']['status']))
+    cursor.execute(add_to_image_table_Q, values)
+    db.commit()
 
-#     class SearchImage(db.Model):
-#         search_text = db.Column(db.String(150), nullable = False)
-#         image1 = db.Column(db.Integer, nullable = False)
-#         image2 = db.Column(db.Integer, nullable = False)
-#         image3 = db.Column(db.Integer, nullable = False)
+
+def updateSearchTable(search_text, image_ids):
+    cursor = db.cursor()
+    add_to_search_table_Q = "INSERT INTO search_image(search_text, image1, image2, image3) values(%s, %s, %s, %s)"
+    
+    if (len(image_ids) > 0):
+        values = (search_text, 
+        str(image_ids[0]), 
+        str(image_ids[1]), 
+        str(image_ids[2]))
+
+        cursor.execute(add_to_search_table_Q, values)
+        db.commit()
+
+
+def checkForExistingImages(image_id):
+    cursor = db.cursor()
+    cursor.execute("SELECT image_id from image_info where image_id = " + str(image_id))
+    result = cursor.fetchall()
+    if(len(result) == 0):
+        return True
+    else:
+        return False
+
+
+def resizeImages():
+    for filename in os.listdir("processed-images/originals/camera"):
+        path = "processed-images/originals/camera/"
+        image = Image.open(path + filename)
+        new_image = image.resize((256, 256))
+        newpath = "processed-images/resized/"
+        new_image.save(newpath + filename)
+
+
+def colorImages(image_to_be_coloured):
+    model = tf.keras.models.load_model("Image Colorization - Model 1")
+
+    color_me = []
+    color_me.append(tf.keras.utils.img_to_array(tf.keras.utils.load_img(image_to_be_coloured)))
+    color_me = np.array(color_me, dtype=float)
+    color_me = rgb2lab(1.0/255 * color_me)[:,:,:,0]
+    color_me = color_me.reshape(color_me.shape + (1,))
+
+    # Predict Images
+    output = model.predict(color_me)
+    output = output * 128
+
+    # Save Results
+    for i in range(len(output)):
+        cur = np.zeros((256, 256, 3))
+        cur[:,:,0] = color_me[i][:,:,0]
+        cur[:,:,1:] = output[i]
+    imsave("processed-images/colored-results/" + image_to_be_coloured.split("/")[-1] + ".png", lab2rgb(cur)*255)
+
+
+def createPosterTemp1(title, arr_image_paths, dict_image_data, description, src):
+    # initialize template
+    temp1 = Image.new('RGB', (1920, 1080), color=(0,0,0))
+    
+    # Add title
+    text1 = ImageDraw.Draw(temp1)
+    font = ImageFont.truetype("arial.ttf", 50)
+    text1.text((910, 40), title, fill=(255, 255, 255), font=font)
+    
+    # Get Images
+    img1 = Image.open(arr_image_paths[0])
+    img1 = img1.resize((256, 256))
+    img2 = Image.open(arr_image_paths[1])
+    img2 = img2.resize((256, 256))
+    img3 = Image.open(arr_image_paths[2])
+    img3 = img3.resize((256, 256))
+
+    # Add images to template
+    temp1.paste(img1, (1000, 150))
+    temp1.paste(img2, (1306, 150))
+    temp1.paste(img3, (1612, 150))
+
+    # Add field names
+    fieldFont = ImageFont.truetype("arial.ttf", 25)
+    sol = ImageDraw.Draw(temp1)
+    sol.text((700, 450), "Sol", fill=(255, 255, 255), font=fieldFont)
+
+    earth_date = ImageDraw.Draw(temp1)
+    earth_date.text((700, 520), "Date of Image (Earth)", fill = (255, 255, 255), font=fieldFont)
+
+    rover_name = ImageDraw.Draw(temp1)
+    rover_name.text((700, 590), "Rover Name", fill = (255, 255, 255), font=fieldFont)
+
+    rover_landing_date = ImageDraw.Draw(temp1)
+    rover_landing_date.text((700, 660), "Rover Landing Date", fill = (255, 255, 255), font=fieldFont)
+
+    rover_launch_date = ImageDraw.Draw(temp1)
+    rover_launch_date.text((700, 730), "Mission Launch Date", fill = (255, 255, 255), font=fieldFont)
+
+    status = ImageDraw.Draw(temp1)
+    status.text((700, 800), "Status of Mission", fill = (255, 255, 255), font=fieldFont)
+
+    # add description
+    ques = ImageDraw.Draw(temp1)
+    descTitleFont = ImageFont.truetype("arial.ttf", 30)
+    ques.text((50, 150), "What is FHAZ?", fill = (255, 255, 255), font=descTitleFont)
+
+    desc = ImageDraw.Draw(temp1)
+    descFont = ImageFont.truetype("arial.ttf", 20)
+    descText = textwrap.fill(text=description, width=60)
+    desc.text((50, 230), descText, fill = (255, 255, 255), font=descFont, spacing=15)
+
+    # Add sources
+    source = ImageDraw.Draw(temp1)
+    source.text((50, 1000), "Sources: " + src, fill = (255, 255, 255), font=descFont)
+
+    # Save Poster
+    temp1.save("processed-images/posters/T1" + title.upper() + ".png")
+
+
+def createPoster(inputSearch):
+    cursor = db.cursor()
+    cursor.execute("SELECT image1, image2, image3 FROM search_image WHERE search_text=" + inputSearch.upper())
+    img_ids = cursor.fetchall()
+    # returns this [(283128, 283129, 283130), (282224, 282225, 282224)]
+
+createPoster("\"FHAZ\"")
