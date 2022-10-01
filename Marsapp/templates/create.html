@@ -12,7 +12,9 @@
     <form action="{{url_for('create')}}" method="get">
         <div class="box">
         <input type="search" name="searchBar" placeholder="Enter a text..." />
+        <form accept="{{url_for("generate_poster")}}" method="get, post">
         <button type="submit" name="submitButton">Search</button>
+    </form>
         <br><br>
     </div>
     </form>

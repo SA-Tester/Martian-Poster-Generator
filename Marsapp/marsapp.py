@@ -14,5 +14,9 @@ def create():
     #PosterGenerator.getInput(str(search))
     return render_template('create.html', title='Create')
 
+@app.route('/poster')
+def generate_poster():
+    PosterGenerator.getInput(str(search))
+
 if __name__ == '__main__':
     app.run(debug=True)
