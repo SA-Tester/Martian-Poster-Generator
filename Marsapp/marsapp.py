@@ -10,12 +10,11 @@ def home():
 
 @app.route('/create',  methods=["GET"])
 def create():
-    search = request.args.get("searchBar")
-    PosterGenerator.getInput(str(search))
     return render_template('create.html', title='Create')
 
 @app.route('/poster')
 def generate_poster():
+    search = request.args.get("searchBar")
     PosterGenerator.getInput(str(search))
 
 if __name__ == '__main__':
