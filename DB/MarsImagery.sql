@@ -67,6 +67,7 @@ CREATE TABLE `image_info` (
 
 LOCK TABLES `image_info` WRITE;
 /*!40000 ALTER TABLE `image_info` DISABLE KEYS */;
+INSERT INTO `image_info` VALUES (191613,2119,'PANCAM','processed-images/originals/camera/PANCAM - 3.png','2010-01-10','Opportunity','2004-01-25','2003-07-07','complete'),(346359,808,'PANCAM','processed-images/originals/camera/PANCAM - 1.png','2006-04-13','Spirit','2004-01-04','2003-06-10','complete'),(346360,808,'PANCAM','processed-images/originals/camera/PANCAM - 2.png','2006-04-13','Spirit','2004-01-04','2003-06-10','complete'),(362667,518,'PANCAM','processed-images/originals/rover/OPPORTUNITY - 1.png','2005-06-19','Spirit','2004-01-04','2003-06-10','complete'),(362668,518,'PANCAM','processed-images/originals/rover/OPPORTUNITY - 2.png','2005-06-19','Spirit','2004-01-04','2003-06-10','complete'),(362669,518,'PANCAM','processed-images/originals/rover/OPPORTUNITY - 3.png','2005-06-19','Spirit','2004-01-04','2003-06-10','complete');
 /*!40000 ALTER TABLE `image_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -91,6 +92,7 @@ CREATE TABLE `search_image` (
 
 LOCK TABLES `search_image` WRITE;
 /*!40000 ALTER TABLE `search_image` DISABLE KEYS */;
+INSERT INTO `search_image` VALUES ('OPPORTUNITY',362667,362668,362669),('PANCAM',346359,346360,191613);
 /*!40000 ALTER TABLE `search_image` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -103,4 +105,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-10-02 21:58:29
+-- Dump completed on 2022-10-02 22:46:58
