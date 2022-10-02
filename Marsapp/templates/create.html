@@ -1,20 +1,20 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="crt_heading">
-    <h1>You can get search for the following<br> data of marss missions</h1>
-    <ul>
+     <h1>You can get search for the following<br> data of marss missions</h1>
+     <ul>
         <li>Images of different rovers<br> from different cameras</li>
         <li>Sol date/Earth date it was taken</li>
         <li>Current status</li>
-    </ul>
+     </ul>
 </div>
 <div class="form">
     <form action="{{url_for('create')}}" method="get">
         <div class="box">
             <input type="search" name="searchBar" placeholder="Enter a text..." />
             <button type="submit" name="submitButton">Search</button>
-            <br><br>
         </div>
     </form>
 </div>
+
 {% endblock %}
