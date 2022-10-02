@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request
-import PosterGenerator
+# import PosterGenerator
 
 app = Flask(__name__)
 
@@ -14,9 +14,13 @@ def create():
     #PosterGenerator.getInput(str(search))
     return render_template('create.html', title='Create')
 
-@app.route('/poster')
-def generate_poster():
-    PosterGenerator.getInput(str(search))
+# @app.route('/poster')
+# def generate_poster():
+    # PosterGenerator.getInput(str(search))
+
+@app.route('/template')
+def template():
+    return render_template('template.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
