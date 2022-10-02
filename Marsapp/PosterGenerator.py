@@ -1,7 +1,6 @@
 # save searches and their template paths
 # input date in YYYY-MM-DD format -> add to guidelines
 
-from turtle import title
 import requests
 import json
 import random
