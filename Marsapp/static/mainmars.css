@@ -137,7 +137,7 @@ nav ul li a:hover::after{
 .crt_heading{
     background-image:linear-gradient(rgba(2, 6, 20, 0.5),rgba(2, 6, 20, 0.5)), url(images/landscape.jpg);
     color: white;
-    text-align: center;
+    text-align: left;
     padding: 5% 0%;
     min-height: 30vh;
     width: 100%;
@@ -146,14 +146,16 @@ nav ul li a:hover::after{
     background-position: center;
 }
 .crt_heading h1{
-    font-size: 45px;
-    font-weight: 400;
+    padding-left: 10%;
+    font-size: 35px;
+    font-weight: 300;
 }
-.crt_heading p{
+.crt_heading ul{
+    padding-left: 10%;
     font-size: 20px;
     font-weight: 200;
 }
-.crt_form{
+.form{
     background-color: #292f36;
     opacity: 0.95;
     margin: 2% 2%;
@@ -162,7 +164,7 @@ nav ul li a:hover::after{
     font-size: 20px;
     color: white;
 }
-.crt_form .box{
+.form .box{
     padding: 30px 0px;
 }
 .crt_form #mission{
@@ -170,19 +172,19 @@ nav ul li a:hover::after{
     padding: 5px;
     font-size: 18px;
 }
-input[type=text], select {
+input[type=search]{
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
     display: inline-block;
     border: none;
-    border-bottom: 2px solid rgb(248, 107, 0);
+    border-bottom: 5px solid rgb(248, 107, 0);
     border-radius: 4px;
     box-sizing: border-box;
-    background-color: #292f36;
-    color: #fff;
+    background-color: rgba(255, 255, 255, 0.85);
+    color: black;
 }
-.example{
+/*.example{
     background-color: rgb(234, 141, 69);
     margin: 2% 0%;
     padding: 1% 2%;
@@ -204,8 +206,8 @@ input[type=text], select {
     background-color: #fff;
     color: black;
     font-size: 15px;
-}
-.addbtn{
+}*/
+button[type=submit]{
     text-align: center;
     box-sizing: border-box;
     border: 2px solid white;
@@ -215,12 +217,10 @@ input[type=text], select {
     font-weight: 500;
     background-color: transparent;
 }
-.addbtn:hover{
+button[type=submit]:hover{
     background-color: #fff;
-    transition: 0.5s;
     color: #292f36;
 }
-
 
 
 @media (max-width: 700px) {
