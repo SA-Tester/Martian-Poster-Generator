@@ -1,7 +1,6 @@
 # save searches and their template paths
 # input date in YYYY-MM-DD format -> add to guidelines
 
-from turtle import title
 import requests
 import json
 import random
@@ -25,13 +24,12 @@ dir_path = ""
 
 def getInput(inputSearch):
     possibleQueries = generateQueries(filterInput(inputSearch), inputSearch)
-    #if(inputSearch.upper() != "" or filterInput(inputSearch) != "ERROR"):
-    try:
-        imageDownloader(possibleQueries, inputSearch)
+    
+    if(inputSearch != None or inputSearch != "ERROR"):
+        imageDownloader(possibleQueries, inputSearch.upper())
         getDataForPosterTemp1("\"" + inputSearch + "\"")
-    except:
-        print("File not found")
-
+    
+    
 def filterInput(inputSearch):
     # Text which user input can be a camera type, sol, rover name, date or status
     global dir_path
@@ -134,7 +132,6 @@ def generateQueries(inputType, inputSearch):
 
             queries = [curiosityQ, opportunityQ, spiritQ]
 
-            #f = open("test.txt", "w")
             for query in queries:
                 response = requests.get(query)
                 
@@ -147,10 +144,6 @@ def generateQueries(inputType, inputSearch):
                         for l in val:
                             possibleQueries[i] = l
                             i += 1
-                            #f.write(str(l) + "\n")
-
-            #f.write(str(possibleQueries[2]['img_src']))
-            #f.close()
 
         elif(inputSearch.upper() == "PANCAM" or inputSearch.upper() == "MINITES"):
             # present in opportunity and spirit
@@ -429,7 +422,7 @@ def createPosterTemp1(title, arr_image_paths, dict_image_data, description, src)
         source.text((60, 1000), "Sources: " + src[0][1:-1] + "\t|\t" + source2, fill = (255, 255, 255), font=descFont)
 
     # Save Poster
-    temp1.save("processed-images/posters/T1 - " + title.upper()[1:-1] + ".png")
+    temp1.save("static/images/posters/T1 - " + title.upper()[1:-1] + ".png")
 
 
 def getDataForPosterTemp1(inputSearch):

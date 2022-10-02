@@ -221,6 +221,57 @@ button[type=submit]:hover{
     background-color: #fff;
     color: #292f36;
 }
+.temp_section h3{
+    /*color: #fff;*/
+    font-size: 40px;
+    font-weight: 400;
+    padding-left: 50px;
+    margin-top: 50px;
+}
+.temp_section h3::after{
+    content: "";
+    background-color: #292f36;
+    width: 35%;
+    height: 3px;
+    display: block;
+    z-index: 10;
+}
+.temp_section .col{
+    margin-top: 10px;
+    flex-basis: 50%;
+    padding: 50px;
+    padding-top: 0;
+    /*color: #fff;*/
+}
+.temp_box{
+    content: '';
+    display: block;
+    width: 600px;
+    height: 400px;
+    background-color: #d4e3e2;
+    color: #292f36;
+    border: 10px dashed;
+    cursor: pointer;
+}
+.temp_box p{
+    text-align: center;
+    text-decoration: none;
+    padding:150px 0;
+    cursor: pointer;
+}
+.temp_box:hover{
+    background-color: #292f36;
+    color: #d4e3e2;
+    transition: 0.5s;
+}
+.contribute{
+    background-image: linear-gradient(rgba(2, 6, 20, 0.8),rgba(2, 6, 20, 0.8)), url(images/bg_temp.jpg);
+    color: #fff;
+    padding: 10px 0;
+}
+.contribute .line1::after{
+    background-color: #fff;
+}
 
 
 @media (max-width: 700px) {

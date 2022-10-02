@@ -8,14 +8,16 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
-@app.route('/create',  methods=["GET"])
+@app.route('/create', methods=["GET"])
 def create():
+    search = request.args.get("searchBar")
+    if(search != None):
+        PosterGenerator.getInput(str(search))
     return render_template('create.html', title='Create')
 
-@app.route('/poster')
-def generate_poster():
-    search = request.args.get("searchBar")
-    PosterGenerator.getInput(str(search))
-
+@app.route('/template')
+def template():
+    return render_template('template.html')
+	
 if __name__ == '__main__':
     app.run(debug=True)
