@@ -1,3 +1,4 @@
+from cgitb import text
 from flask import Flask, render_template, url_for, request
 import PosterGenerator
 
@@ -10,12 +11,16 @@ def home():
 
 @app.route('/create',  methods=["GET"])
 def create():
-    return render_template('create.html', title='Create')
-
-@app.route('/poster')
-def generate_poster():
     search = request.args.get("searchBar")
-    PosterGenerator.getInput(str(search))
+    paths = []
+    if(search != None):
+        PosterGenerator.getInput(str(search))
+        paths = PosterGenerator.getPathsToPosters()
+    return render_template('create.html', title='Create', paths=paths)
+
+@app.route('/template')
+def template():
+    return render_template('template.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

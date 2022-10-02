@@ -222,6 +222,11 @@ button[type=submit]:hover{
     color: #292f36;
 }
 
+.results-div{
+    margin: 2% 2%;
+    /*padding: 5% 10%;*/
+    border: 5px;
+}
 
 @media (max-width: 700px) {
     .body{
