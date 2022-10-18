@@ -17,4 +17,15 @@
     </form>
 </div>
 
+<br><br>
+<div class="results-div">
+    <h3>Created Posters</h3>
+    <form action="/get_results/" method="post">
+        {%for path in paths%}
+        <a href = "{{ url_for('static', filename =  path) }}">
+            <img src="{{ url_for('static', filename =  path) }}" width="30%" height="30%" alt="Image not found"/>
+        </a>
+        {%endfor%}
+    </form>
+</div>
 {% endblock %}

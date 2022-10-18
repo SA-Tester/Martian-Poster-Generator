@@ -9,6 +9,11 @@ import mysql.connector
 import textwrap
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
+from newspaper import Article
+from wordcloud import WordCloud
+from wordcloud import STOPWORDS
+from PIL import Image
 from PIL import Image, ImageDraw, ImageFont
 from skimage.color import rgb2lab, lab2rgb
 from skimage.io import imsave
@@ -21,6 +26,7 @@ db = mysql.connector.connect(
     )
 
 dir_path = ""
+posterPaths = []
 
 def getInput(inputSearch):
     possibleQueries = generateQueries(filterInput(inputSearch), inputSearch)
@@ -121,12 +127,12 @@ def generateQueries(inputType, inputSearch):
     for i in range(3):
         n = random.randint(0, 2500)
         sols.append(str(n))
-
-    curiosityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=" + sols[0] + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
-    opportunityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/photos?sol=" + sols[1] + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
-    spiritQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=" + sols[2] + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
     
     if(inputType == "camera"):
+        curiosityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=" + sols[0] + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
+        opportunityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/photos?sol=" + sols[1] + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
+        spiritQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=" + sols[2] + "&camera=" + inputSearch + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
+
         if(inputSearch.upper() == "FHAZ" or inputSearch.upper == "RHAZ" or inputSearch == "NAVCAM"):
             # present in all 3 rovers
 
@@ -179,6 +185,32 @@ def generateQueries(inputType, inputSearch):
                         for l in val:
                             possibleQueries[i] = l
                             i += 1
+
+    elif(inputType == "rover"):
+        spiritCams = ["FHAZ", "RHAZ", "NAVCAM", "PANCAM", "MINITES"]
+        curiosityCams = ["FHAZ", "RHAZ", "NAVCAM", "MAST", "CHEMCAM", "MAHLI", "MARDI"]
+        opportunityCams = ["FHAZ", "RHAZ", "NAVCAM", "PANCAM", "MINITES"]
+
+        curiosityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/photos?sol=" + sols[0] + "&camera=" + curiosityCams[random.randint(0, len(curiosityCams)-1)] + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
+        opportunityQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/opportunity/photos?sol=" + sols[1] + "&camera=" + opportunityCams[random.randint(0, len(opportunityCams)-1)] + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
+        spiritQ = "https://api.nasa.gov/mars-photos/api/v1/rovers/spirit/photos?sol=" + sols[2] + "&camera=" + spiritCams[random.randint(0, len(spiritCams)-1)] + "&api_key=Iy6ndQpWKECX5adXsiHgPvbIef9KyZ2QtvruNThl"
+
+        queries = [curiosityQ, opportunityQ, spiritQ]
+
+        for query in queries:
+            response = requests.get(query)
+            
+            if(response.status_code == 200):
+                jsonData = json.loads(response.text)
+                dictData = jsonData
+
+                i = 0
+                for val in dictData.values():
+                    for l in val:
+                        possibleQueries[i] = l
+                        i += 1
+
+        createWordCloud(inputSearch)
 
     return possibleQueries
 
@@ -422,7 +454,10 @@ def createPosterTemp1(title, arr_image_paths, dict_image_data, description, src)
         source.text((60, 1000), "Sources: " + src[0][1:-1] + "\t|\t" + source2, fill = (255, 255, 255), font=descFont)
 
     # Save Poster
-    temp1.save("static/images/posters/T1 - " + title.upper()[1:-1] + ".png")
+    path_of_poster = "static/images/posters/T1 - " + title.upper()[1:-1] + ".png"
+    short_path = "images/posters/T1 - " + title.upper()[1:-1] + ".png"
+    temp1.save(path_of_poster)
+    posterPaths.append(short_path)
 
 
 def getDataForPosterTemp1(inputSearch):
@@ -457,21 +492,50 @@ def getDataForPosterTemp1(inputSearch):
 
         description = ""
         sources = []
-        if(filterInput(inputSearch[1 : -1]) == "camera"):
-            if(inputSearch[1 : -1] == "FHAZ" or inputSearch[1 : -1] == "RHAZ"):
-                cursor.execute("SELECT description from camera_info where camera_name = " + "\"" + inputSearch[2:-1].upper() + "\"")
-                description = cursor.fetchone()
-                cursor.execute("SELECT source from camera_info where camera_name = " + "\"" + inputSearch[2:-1].upper() + "\"")
-                sources.append(str(cursor.fetchone())[1 : -1])
+        # if(filterInput(inputSearch[1 : -1]) == "camera"):
+        if(inputSearch[1 : -1] == "FHAZ" or inputSearch[1 : -1] == "RHAZ"):
+            cursor.execute("SELECT description from image_descriptions where name = " + "\"" + inputSearch[2:-1].upper() + "\"")
+            description = cursor.fetchone()
+            cursor.execute("SELECT source from image_descriptions where name = " + "\"" + inputSearch[2:-1].upper() + "\"")
+            sources.append(str(cursor.fetchone())[1 : -1])
 
-            else:
-                cursor.execute("SELECT description from camera_info where camera_name = " + inputSearch.upper())
-                description = cursor.fetchone()
-                cursor.execute("SELECT source from camera_info where camera_name = " + inputSearch.upper())
-                sources.append(str(cursor.fetchone())[1 : -2])
+        else:
+            cursor.execute("SELECT description from image_descriptions where name = " + inputSearch.upper())
+            description = cursor.fetchone()
+            cursor.execute("SELECT source from image_descriptions where name = " + inputSearch.upper())
+            sources.append(str(cursor.fetchone())[1 : -2])
         
         description = str(description)[1 : -2]
         
         db.commit()
         
         createPosterTemp1(inputSearch.upper(), image_paths, comp_img_data, description, sources)
+
+def getPathsToPosters():
+    return posterPaths
+
+def createWordCloud(inputSearch):
+    article_link = ""
+
+    if(inputSearch.upper() == "OPPORTUNITY"):
+        article_link = "https://en.wikipedia.org/wiki/Opportunity_(rover)"
+
+    elif(inputSearch.upper() == "SPIRIT"):
+        article_link = "https://en.wikipedia.org/wiki/Spirit_(rover)"
+
+    elif(inputSearch.upper() == "CURIOSITY"):
+        article_link = "https://en.wikipedia.org/wiki/Curiosity_(rover)"
+
+    article = Article(article_link)
+    article.download()
+    article.parse()
+    
+    wc = WordCloud(background_color="white", max_words=2000, 
+        stopwords=STOPWORDS, max_font_size=256, 
+        random_state=42, width=1920, height=1080)
+
+    wc.generate(article.text)
+    plt.imshow(wc, interpolation="bilinear")
+    plt.axis('off')
+    plt.savefig("static/images/posters/" + inputSearch.upper() + ".png")
+    posterPaths.append("images/posters/" + inputSearch.upper() + ".png")
