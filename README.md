@@ -18,3 +18,9 @@
   <li>Exit from the mysql console: quit</li>
   <li>Restore the .sql file: mysql -u[username] -p[password] MarsImagery < [local path to backupfile]</li>
 </ul>
+
+5. Open a command line and navigate to the folder where the file "marsapp.py" is in
+6. Run the command flask --app marsapp run
+7. In a browser enter the URL 127.0.0.1:5000 (usually) to view the content
+
+NOTE: Make sure your run the mysql service allowing the app to connect with the database
