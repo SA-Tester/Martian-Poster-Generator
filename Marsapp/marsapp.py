@@ -1,4 +1,3 @@
-from cgitb import text
 from flask import Flask, render_template, url_for, request
 import PosterGenerator
 
