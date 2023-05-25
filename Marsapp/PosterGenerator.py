@@ -21,8 +21,8 @@ from skimage.io import imsave
 db = mysql.connector.connect(
         host = "localhost",
         user = "root",
-        password = "Root1234$",
-        database = "MarsImagery"
+        password = "",
+        database = "marsimagery"
     )
 
 dir_path = ""
