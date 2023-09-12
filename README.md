@@ -1,4 +1,5 @@
-# Refused-Warriors-22
+# Martian Poster Generator
+<h4>A Project by Refused Warriors for NASA Space Apps 2022</h4>
 
 # Deploying the Application in your local machine
 1. Install latest python version from https://www.python.org/downloads/
