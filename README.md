@@ -1,7 +1,14 @@
 # Martian Poster Generator
-<h4>A Project by Refused Warriors for NASA Space Apps 2022</h4>
+<h2>A Project by Refused Warriors for NASA Space Apps 2022</h2>
 
-# Deploying the Application in your local machine
+<h4>Key Features</h4>
+<ol>
+  <li>Greyscale to coloured image conversion (Image Source: NASA Mars API)</li>
+  <li>Informative poster generation based on user inputs(Data Sources: NASA Open Data catalogues, Wikipedia)</li>
+</ol>
+
+<h4> Deploying the Application in your local machine </h4>
+<p>
 1. Install latest python version from https://www.python.org/downloads/
 2. Install tensorflow, numpy, matplotlib, wordcloud, newspaper, PIL, skimage, mysql.connector and flask modules using pip<br>
 <ul>
@@ -25,3 +32,4 @@
 7. In a browser enter the URL 127.0.0.1:5000 (usually) to view the content
 
 NOTE: Make sure your run the mysql service allowing the app to connect with the database
+</p>
